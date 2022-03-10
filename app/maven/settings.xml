@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+	
+  <!-- Mirrors -->
+  <mirrors>
+    <mirror>
+      <id>nexus</id>
+      <name>Nexus Maven Repository</name>
+      <!-- TODO Define of the Nexus -->
+      <url>https://nexus-common-tools.apps.ocp-dev.baj.com.sa/repository/maven-public/</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+
+  <!-- Maven Profiles -->
+  <profiles>
+    <profile>
+      <id>maven-central</id>
+      <repositories>
+        <repository>
+          <id>maven-central</id>
+          <url>https://repo1.maven.org/maven2</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>maven-central</id>
+          <url>https://repo1.maven.org/maven2</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    <profile>
+      <id>redhat-ga-repository</id>
+      <repositories>
+        <repository>
+          <id>redhat-ga-repository</id>
+          <name>Red Hat GA repository</name>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>redhat-ga-repository</id>
+          <name>Red Hat GA repository</name>
+          <url>https://maven.repository.redhat.com/ga/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  
+  <activeProfiles>
+    <activeProfile>maven-central</activeProfile>
+    <activeProfile>redhat-ga-repository</activeProfile>
+  </activeProfiles>
+</settings>
