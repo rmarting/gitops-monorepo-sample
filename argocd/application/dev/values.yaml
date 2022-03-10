@@ -1,0 +1,17 @@
+# Values to apply in Dev Environment
+
+name: "sample-app"
+nameOverride: "sample-app"
+
+image:
+  tag: "1.0.2-20220310-150002-47a046e"
+
+# Config
+config:
+  env:
+    APP_ENVIRONMENT: dev
+
+# Secrets
+secrets:
+  env: 
+    APP_ENVIRONMENT_SECRET: my-dev-secret
