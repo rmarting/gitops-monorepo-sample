@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.jromanmartin.quarkus</groupId>
   <artifactId>sample-app</artifactId>
-  <version>1.0.1-20220310-145058-6c9e656</version>
+  <version>1.0.2-20220310-150002-47a046e</version>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <failsafe.useModulePath>false</failsafe.useModulePath>
