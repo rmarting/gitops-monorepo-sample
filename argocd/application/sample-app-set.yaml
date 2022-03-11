@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: sample-app-set
+  namespace: gitops-monorepo-cicd
+spec:
+  generators:
+  - list:
+      elements:
+      - env: dev
+      - env: tst
+      - env: pro
+  template:
+    metadata:
+      name: sample-app-{{env}}
+    spec:
+      project: gitops-monorepo
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      source:
+        repoURL: https://github.com/rmarting/gitops-monorepo-sample.git
+        targetRevision: HEAD
+        path: argocd/application
+        helm:
+          valueFiles:
+            - ../../argocd/application/{{ env }}/values.yaml
+      destination:
+        namespace: 'gitops-monorepo-{{ env }}'
+        server: 'https://kubernetes.default.svc'

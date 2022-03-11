@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app-dev
+  namespace: gitops-monorepo-cicd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  
+spec:
+  project: gitops-monorepo
+  source:
+    repoURL: https://github.com/rmarting/gitops-monorepo-sample.git
+    targetRevision: HEAD
+    path: charts/quarkus-app-chart
+    helm:
+      valueFiles:
+        - ../../argocd/application/dev/values.yaml
+  destination:
+    namespace: gitops-monorepo-dev
+    server: 'https://kubernetes.default.svc'
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true
