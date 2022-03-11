@@ -52,11 +52,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-health</artifactId>
     </dependency>
-    <!-- JPA and Hibernate -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-orm</artifactId>
-    </dependency>
     <!-- 3-party Dependencies -->
     <dependency>
       <groupId>org.projectlombok</groupId>
