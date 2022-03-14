@@ -10,8 +10,10 @@ image:
 config:
   env:
     APP_ENVIRONMENT: dev
-    CHAOS_READINESS_UP: true
-    CHAOS_LIVENESS_UP: true
+    CHAOS_READINESS_UP: "true"
+    CHAOS_READINESS_CRON: "* */2 * * * ?"
+    CHAOS_LIVENESS_UP: "true"
+    CHAOS_LIVENESS_CRON: "* */2 * * * ?"
 
 # Secrets
 secrets:
