@@ -4,7 +4,7 @@ name: "sample-app"
 nameOverride: "sample-app"
 
 image:
-  tag: "1.0.3-20220314-102449-d77bf97"
+  tag: "1.0.3-20220314-103501-465c1eb"
 
 # Config
 config:
