@@ -1,0 +1,110 @@
+{
+  "info": {
+    "name": "Sample App Postman Collection",
+    "description": "Collection to test and verity Sample App API"
+  },
+  "item": [
+    {
+      "name": "Testing user endpoint",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('expect response be 200', function () {",
+            "    pm.response.to.be.ok",
+            "});",
+            "pm.test('expect response json is a hello', function () {",
+            "    pm.expect(pm.response.json().message).to.be.equal('Hello!');",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "url": "{{base_url}}/user",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Testing user greeting endpoint",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('expect response be 200', function () {",
+            "    pm.response.to.be.ok",
+            "});",
+            "pm.test('expect response json is a greeting message', function () {",
+            "    pm.expect(pm.response.json().message).to.be.equal('Hello sample!');",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "url": "{{base_url}}/user/greeting/sample",
+        "method": "GET"
+      }
+  },
+    {
+      "name": "Testing greeting endpoint with a json body",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('expect response be 201', function () {",
+            "    pm.expect(pm.response.code).to.be.equal(201);",
+            "});",
+            "pm.test('expect response json is a greeting message', function () {",
+            "    pm.expect(pm.response.json().message).to.be.equal('Hello Sample!');",
+            "    pm.expect(pm.response.json().messageType).to.be.equal('GREETING');",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "url": "{{base_url}}/user/greeting",
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Sample\"}"
+        }
+      }
+    },
+    {
+      "name": "Testing farewell endpoint with a json body",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('expect response be 201', function () {",
+            "    pm.expect(pm.response.code).to.be.equal(201);",
+            "});",
+            "pm.test('expect response json is a farewell message from local environment', function () {",
+            "    pm.expect(pm.response.json().message).to.be.equal('Bye Sample!');",
+            "    pm.expect(pm.response.json().messageType).to.be.equal('FAREWELL')",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "url": "{{base_url}}/user/farewell",
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Sample\"}"
+        }
+      }
+    }
+  ]
+}
