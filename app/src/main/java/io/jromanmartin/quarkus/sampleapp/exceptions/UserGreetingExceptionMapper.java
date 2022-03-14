@@ -1,4 +1,4 @@
-package sa.com.baj.transformers.exceptions;
+package io.jromanmartin.quarkus.sampleapp.exceptions;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

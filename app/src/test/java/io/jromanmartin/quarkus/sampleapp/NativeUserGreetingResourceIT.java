@@ -1,4 +1,4 @@
-package sa.com.baj.transformers;
+package io.jromanmartin.quarkus.sampleapp;
 
 import io.quarkus.test.junit.NativeImageTest;
 

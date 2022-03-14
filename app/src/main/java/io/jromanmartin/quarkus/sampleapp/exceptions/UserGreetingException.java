@@ -1,4 +1,4 @@
-package sa.com.baj.transformers.exceptions;
+package io.jromanmartin.quarkus.sampleapp.exceptions;
 
 import java.io.Serializable;
 
