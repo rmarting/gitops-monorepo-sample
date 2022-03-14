@@ -26,12 +26,12 @@ public class ChaosBuilder {
     /**
      * Current liveness status
      */
-    private boolean livenessUp = false;
+    private boolean livenessUp = true;
 
     /**
      * Current readiness status
      */
-    private boolean readinessUp = false;
+    private boolean readinessUp = true;
 
     /**
      * Builds liveness chaos
