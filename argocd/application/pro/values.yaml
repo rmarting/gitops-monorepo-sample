@@ -14,9 +14,9 @@ image:
 config:
   env:
     APP_ENVIRONMENT: pro
-    CHAOS_READINESS_UP: "false"
+    CHAOS_READINESS_ENABLE: "false"
     CHAOS_READINESS_CRON: "0 */2 * * * ?"
-    CHAOS_LIVENESS_UP: "false"
+    CHAOS_LIVENESS_ENABLE: "false"
     CHAOS_LIVENESS_CRON: "0 */2 * * * ?"
 
 # Secrets
