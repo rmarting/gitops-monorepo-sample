@@ -12,10 +12,10 @@ public class ChaosBuilder {
 
     private static final Logger LOG = Logger.getLogger(ChaosBuilder.class);
 
-    @ConfigProperty(name = "chaos.liveness.enable", defaultValue = "true")
+    @ConfigProperty(name = "chaos.liveness.enable", defaultValue = "false")
     private boolean chaosLivenessEnable;
 
-    @ConfigProperty(name = "chaos.readiness.enable", defaultValue = "true")
+    @ConfigProperty(name = "chaos.readiness.enable", defaultValue = "false")
     private boolean chaosReadinessEnable;
 
     /**
