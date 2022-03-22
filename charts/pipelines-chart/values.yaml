@@ -33,9 +33,10 @@ sonarqube:
 # Git Credentials
 
 git:
-  user: TO_BE_DEFINED
-  token: TO_BE_DEFINED
   base_url: github.com
   full_url: https://github.com
   webhook:
     secret: s3cr3t
+  sealed_secret:
+    config: TO_BE_DEFINED
+    credentials: TO_BE_DEFINED
