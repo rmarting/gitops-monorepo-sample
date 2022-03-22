@@ -1,0 +1,23 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: gitops-monorepo-eventlistener
+spec:
+  serviceAccountName: pipeline
+  triggers:
+    - triggerRef: maven-app-cicd-pipeline-trigger
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: gitops-monorepo-eventlistener
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: el-gitops-monorepo-eventlistener
+    weight: 100
+  tls:
+    termination: edge

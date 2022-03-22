@@ -1,0 +1,47 @@
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: maven-app-cicd-pipeline-trigger
+spec:
+  interceptors:
+    - ref:
+        # GitHub interceptor
+        name: github
+      params:
+        - name: secretRef
+          value:
+            secretName: git-interceptor-webhook
+            secretKey: secret
+        - name: eventTypes
+          value: ["push"]
+    - ref:
+        name: cel
+      params:
+        # CI or CICD pipeline
+        - name: "overlays"
+          value:
+          - key: cicd_enabled
+            expression: "body.ref == 'refs/heads/main'"
+          - expression: body.ref.split('/')[2]
+            key: git-branch
+        # Changes in the trunk branch
+        # Commit adds new code in the app
+        - name: "filter"
+          value: "body.head_commit.added.size() > 0"
+        - name: "filter"
+          value: "body.head_commit.added.exists(x, x.startsWith('app'))"
+        # Commit removes code in the app
+        - name: "filter"
+          value: "body.head_commit.removed.size() > 0"
+        - name: "filter"
+          value: "body.head_commit.removed.exists(x, x.startsWith('app'))"
+        # Commit modifies code in the app
+        - name: "filter"
+          value: "body.head_commit.modified.size() > 0"
+        - name: "filter"
+          value: "body.head_commit.modified.exists(x, x.startsWith('app'))"
+  bindings:
+    - ref: maven-app-cicd-pipeline-triggerbinding
+  template:
+    ref: maven-app-cicd-pipeline-triggertemplate

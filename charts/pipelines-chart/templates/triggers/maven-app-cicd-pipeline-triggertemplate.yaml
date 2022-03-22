@@ -1,0 +1,65 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: maven-app-cicd-pipeline-triggertemplate
+spec:
+  params:
+    - name: git_url
+      description: The git repository that hosts context  
+    - name: git_branch
+      description: The branch name of the repository  
+    - name: git_commit_id
+      description: The commit id of the repository
+    - name: cicd_enabled
+      description: If true then enables a full CICD pipeline, otherwise a single CI pipeline
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:  
+        generateName: maven-app-cicd-
+        labels:
+          tekton.dev/pipeline: "maven-app-cicd-pipeline"
+          git.branch: "$(tt.params.git_branch)"
+          git.commit.id: "$(tt.params.git_commit_id)"
+          cicd: "$(tt.params.cicd_enabled)"
+      spec:
+        pipelineRef:
+          name: maven-app-cicd-pipeline
+        workspaces:
+          - name: workspace
+            #persistentVolumeClaim:
+            #  claimName: pipeline-workspace
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce # access mode may affect how you can use this volume in parallel tasks
+                resources:
+                  requests:
+                    storage: "1Gi"
+          - name: maven-settings
+            configMap:
+              name: maven-settings
+          - name: maven-m2-repo
+            persistentVolumeClaim:
+              claimName: maven-m2-repo
+          - name: git-cli-auth
+            secret:
+              secretName: git-cli-auth
+        params:
+          - name: CICD
+            value: $(tt.params.cicd_enabled)
+          - name: PROJECT_NAME
+            value: {{ .Values.project.name | quote }}
+          - name: APP_NAME
+            value: {{ .Values.application.name | quote }}
+          - name: MONOREPO_GIT
+            value: $(tt.params.git_url)
+          - name: MONOREPO_GIT_REVISION
+            value: $(tt.params.git_branch)
+          - name: MONOREPO_APP_CONTEXT_DIR
+            value: app
+          - name: APP_IMAGE
+            value: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.image.name }}"
+          - name: NEXUS_URL
+            value: "{{ .Values.nexus.url }}"

@@ -1,0 +1,15 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: maven-app-cicd-pipeline-triggerbinding
+spec:
+  params:
+    - name: git_url
+      value: $(body.repository.clone_url)
+    - name: git_branch
+      value: $(extensions.git-branch)
+    - name: git_commit_id
+      value: $(body.head_commit.id)
+    - name: cicd_enabled
+      value: $(extensions.cicd_enabled)

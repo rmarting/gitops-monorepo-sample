@@ -1,0 +1,2 @@
+
+{{ .Values.application.name }} pipelines created for {{ .Values.project.name }} project.
