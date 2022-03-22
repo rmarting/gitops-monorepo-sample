@@ -13,10 +13,10 @@ public class ChaosBuilder {
     private static final Logger LOG = Logger.getLogger(ChaosBuilder.class);
 
     @ConfigProperty(name = "chaos.readiness.enable", defaultValue = "false")
-    private boolean chaosReadinessEnable;
+    boolean chaosReadinessEnable;
 
     @ConfigProperty(name = "chaos.liveness.enable", defaultValue = "false")
-    private boolean chaosLivenessEnable;
+    boolean chaosLivenessEnable;
 
     /**
      * Random generator
@@ -26,12 +26,12 @@ public class ChaosBuilder {
     /**
      * Current liveness status
      */
-    private boolean livenessUp = true;
+    boolean livenessUp = true;
 
     /**
      * Current readiness status
      */
-    private boolean readinessUp = true;
+    boolean readinessUp = true;
 
     /**
      * Builds liveness chaos
