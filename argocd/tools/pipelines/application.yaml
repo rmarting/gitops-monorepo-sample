@@ -12,10 +12,8 @@ spec:
     targetRevision: HEAD
     path: charts/pipelines-chart
     helm:
-      values: |-
-        git:
-          user: TO_BE_DEFINED
-          token: TO_BE_DEFINED
+      valueFiles:
+        - ../../argocd/tools/pipelines/values.yaml
   destination:
     namespace: gitops-monorepo-cicd
     server: 'https://kubernetes.default.svc'
@@ -24,4 +22,4 @@ spec:
       prune: false
       selfHeal: false
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
