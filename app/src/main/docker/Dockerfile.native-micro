@@ -6,15 +6,15 @@
 #
 # Before building the container image run:
 #
-# ./mvnw package -Pnative
+# ./mvnw package -Pnative -Dquarkus.native.container-build=true
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/user-transactions-service .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/sample-app .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/user-transactions-service
+# docker run -i --rm -p 8080:8080 quarkus/sample-app
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:1.0
