@@ -1,25 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sample-app-tst
+  name: pipelines
   namespace: gitops-monorepo-cicd
   finalizers:
     - resources-finalizer.argocd.argoproj.io  
 spec:
-  project: gitops-monorepo-apps
+  project: gitops-monorepo-tools
   source:
     repoURL: https://github.com/rmarting/gitops-monorepo-sample.git
     targetRevision: HEAD
-    path: charts/quarkus-app-chart
+    path: charts/pipelines-chart
     helm:
-      valueFiles:
-        - ../../argocd/application/tst/values.yaml
+      values: |-
+        git:
+          user: TO_BE_DEFINED
+          token: TO_BE_DEFINED
   destination:
-    namespace: gitops-monorepo-tst
+    namespace: gitops-monorepo-cicd
     server: 'https://kubernetes.default.svc'
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: false
     syncOptions:
     - CreateNamespace=true

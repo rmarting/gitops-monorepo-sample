@@ -1,0 +1,16 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-monorepo-tools
+  namespace: gitops-monorepo-cicd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "GitOps Product MonoRepo Project - Tools"
+  destinations:
+    - namespace: gitops-monorepo-cicd
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://redhat-cop.github.io/helm-charts
+    - https://github.com/rmarting/gitops-monorepo-sample.git

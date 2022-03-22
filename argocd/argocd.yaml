@@ -1,0 +1,87 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: argocd
+  namespace: gitops-monorepo-cicd
+spec:
+  # Resources configuration proposed to absorb the spikes of CPU and RAM for
+  # synchronization of 100 ArgoCD applications at a time.
+  ha:
+    enabled: false
+  server:
+    route:
+      enabled: true
+    # resources:
+    #   limits:
+    #     cpu: 150m
+    #     memory: 150Mi
+    #   requests:
+    #     memory: 150Mi
+    #     cpu: 150m
+  # repo:
+  #   resources:
+  #     limits:
+  #       cpu: 200m
+  #       memory: 150Mi
+  #     requests:
+  #       cpu: 200m
+  #       memory: 150Mi
+  dex:
+    openShiftOAuth: false
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 50Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 50Mi
+  # controller:
+  #   resources: 
+  #     limits:
+  #       cpu: "1"
+  #       memory: 2000Mi
+  #     requests:
+  #       cpu: "1"
+  #       memory: 2000Mi
+  # redis:
+  #   resources:
+  #     limits:
+  #       cpu: 150m
+  #       memory: 50Mi
+  #     requests:
+  #       cpu: 150m
+  #       memory: 50Mi
+  rbac:
+    defaultPolicy: 'role:'
+    policy: |
+      # Default Policies
+      g, system:cluster-admins, role:admin
+
+      # My GitOps Admin Role
+      p, role:my-gitops-admin, applications, *, */*, allow
+      p, role:my-gitops-admin, clusters, get, *, allow
+      p, role:my-gitops-admin, repositories, get, *, allow
+      p, role:my-gitops-admin, repositories, create, *, allow
+      p, role:my-gitops-admin, repositories, update, *, allow
+      p, role:my-gitops-admin, repositories, delete, *, allow
+      p, role:my-gitops-admin, projects, *, *, allow
+      # My GitOps Developer Role
+      p, role:my-gitops-developer,  applications, *, */*, allow
+
+      # Match users and roles
+      g, operator, role:my-gitops-admin
+      g, developer, role:my-gitops-developer
+    scopes: '[groups]'
+  prometheus:
+    enabled: false
+    route:
+      enabled: false
+    size: 1
+  grafana:
+    enabled: false
+    size: 1
+    route:
+      enabled: false
+  statusBadgeEnabled: true
+  usersAnonymousEnabled: false

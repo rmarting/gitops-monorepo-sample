@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: gitops-monorepo-cicd
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: argocd-rbac-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  policy.default: role:admin
+  policy.csv: |
+    # My GitOps Admin Role
+    p, role:my-gitops-admin, applications, *, */*, allow
+    p, role:my-gitops-admin, clusters, get, *, allow
+    p, role:my-gitops-admin, repositories, get, *, allow
+    p, role:my-gitops-admin, repositories, create, *, allow
+    p, role:my-gitops-admin, repositories, update, *, allow
+    p, role:my-gitops-admin, repositories, delete, *, allow
+    p, role:my-gitops-admin, projects, *, *, allow
+    # My GitOps Developer Role
+    p, role:my-gitops-developer,  applications, *, */*, allow
+
+    # Match users and roles
+    g, operator, role:my-gitops-admin
+    g, developer, role:my-gitops-developer

@@ -7,18 +7,14 @@ spec:
   generators:
   - list:
       elements:
-      - env: dev
-      - env: tst
-      - env: pro
+        - env: dev
+        - env: tst
+        - env: pro
   template:
     metadata:
       name: sample-app-{{env}}
     spec:
-      project: gitops-monorepo
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
+      project: gitops-monorepo-apps
       source:
         repoURL: https://github.com/rmarting/gitops-monorepo-sample.git
         targetRevision: HEAD
@@ -29,3 +25,7 @@ spec:
       destination:
         namespace: 'gitops-monorepo-{{ env }}'
         server: 'https://kubernetes.default.svc'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
