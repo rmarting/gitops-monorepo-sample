@@ -1,0 +1,12 @@
+---
+# Sealed Secrets Values
+
+nameOverride: sealed-secrets
+fullnameOverride: sealed-secrets
+
+securityContext:
+  runAsUser: ""
+  fsGroup: ""
+
+commandArgs:
+  - "--update-status=true"  

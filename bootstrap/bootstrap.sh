@@ -38,3 +38,17 @@ echo ""
 oc label namespace $DEV_PROJECT argocd.argoproj.io/managed-by=argocd
 oc label namespace $TST_PROJECT argocd.argoproj.io/managed-by=argocd
 oc label namespace $PRO_PROJECT argocd.argoproj.io/managed-by=argocd
+
+echo ""
+echo "Deploying Sealed Secrets"
+echo ""
+
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets --version 1.16.1 \
+  -f sealed-secrets/values.yaml -n $CICD_PROJECT
+
+echo "Installing kubeseal cli in tmp folder"
+
+curl -sSL -o /tmp/kubeseal.tar.gz https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.17.2/kubeseal-0.17.2-linux-amd64.tar.gz
+tar -xvf /tmp/kubeseal.tar.gz -C /tmp
+/tmp/kubeseal --version

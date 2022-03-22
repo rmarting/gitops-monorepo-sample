@@ -77,6 +77,36 @@ images from there for the rest of namespaces. This command for each namespace wi
 ❯ oc policy add-role-to-user system:image-puller system:serviceaccount:gitops-monorepo-<ENV>:default -n gitops-monorepo-cicd
 ```
 
+## Sealed Secrets
+
+Store credentials in Git repositories sounds not good, as you are sharing sensitive data in a
+repository (sometimes public), however if we want to use GitOps, it requires to have everything in Git.
+To avoid to store sensitive data in the Git, we could use some tools to secure the data in our
+Product Monorepo and move into OpenShift in a secure way. Here Sealed Secret will support us to
+have secured data before to move to OpenShift.
+
+Sealed Secrets allows us to seal OpenShift secrets by using a utility called `kubeseal`. The `SealedSecrets`
+are Kubernetes resources that contain encrypted `Secret` object that only the controller can decrypt. This object
+could be stored safely in our Product Monorepo.
+
+To install this tool in our environment:
+
+```shell
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets --version 1.16.1 \
+  -f sealed-secrets/values.yaml -n gitops-monorepo-cicd
+```
+
+To encrypt the secrets, you need the `kubeseal` cli, available from [here](https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.17.2/kubeseal-0.17.2-linux-amd64.tar.gz)
+
+This script installs it in a temporary folder:
+
+```shell
+curl -sSL -o /tmp/kubeseal.tar.gz https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.17.2/kubeseal-0.17.2-linux-amd64.tar.gz
+tar -xvf /tmp/kubeseal.tar.gz -C /tmp
+/tmp/kubeseal --version
+```
+
 ## DevOps Teams
 
 As it is now a good idea to allow DevOps teams to be `cluster-admin`, we could add these users to the new
