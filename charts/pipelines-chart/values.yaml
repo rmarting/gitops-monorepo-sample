@@ -32,11 +32,14 @@ sonarqube:
 
 # Git Credentials
 
-git:
-  base_url: github.com
-  full_url: https://github.com
+git:  
   webhook:
     secret: s3cr3t
-  sealed_secret:
-    config: TO_BE_DEFINED
-    credentials: TO_BE_DEFINED
+  secrets: {}
+    #- name: github
+    #  type: Opaque
+    #  labels:
+    #    credential.sync.jenkins.openshift.io: "true"
+    #  data:
+    #    config: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
+    #    credentials: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
