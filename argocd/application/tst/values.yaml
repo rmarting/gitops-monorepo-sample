@@ -8,7 +8,7 @@ nameOverride: "sample-app"
 replicaCount: 1
 
 image:
-  tag: "1.0.3-20220322-070519-15ca2be"
+  tag: "1.0.3-20220322-083404-57b7af4"
 
 # Config
 config:
