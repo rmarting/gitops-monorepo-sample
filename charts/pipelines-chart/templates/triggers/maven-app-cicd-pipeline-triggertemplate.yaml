@@ -56,7 +56,7 @@ spec:
           - name: MONOREPO_GIT_REVISION
             value: $(tt.params.git_branch)
           - name: MONOREPO_APP_CONTEXT_DIR
-            value: apps/sample-frontend
+            value: apps/sample-backend
           - name: APP_IMAGE
             value: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.application.backend }}"
           - name: NEXUS_URL
