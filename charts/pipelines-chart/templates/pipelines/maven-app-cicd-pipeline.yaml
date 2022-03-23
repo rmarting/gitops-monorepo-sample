@@ -294,7 +294,7 @@ spec:
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/dev/values.yaml
 
             echo "Pushing changes into Monorepo Git"
-            git add argocd/application/dev/values.yaml
+            git add argocd/applications/sample-backend/dev/values.yaml
             git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
             git push origin $(params.MONOREPO_GIT_REVISION)
       workspaces:
@@ -324,7 +324,7 @@ spec:
 
             echo "Creating ArgoCD application for DEV Environment"
 
-            oc apply -f $(workspaces.manifest-dir.path)/argocd/application/dev/application.yaml \
+            oc apply -f $(workspaces.manifest-dir.path)/argocd/applications/sample-backend/dev/application.yaml \
               --namespace=$(params.PROJECT_NAME)-cicd
             sleep 10
 
@@ -404,7 +404,7 @@ spec:
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/tst/values.yaml
 
             echo "Pushing changes into Git repository"
-            git add argocd/application/tst/values.yaml
+            git add argocd/applications/sample-backend/tst/values.yaml
             git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
             git push origin $(params.MONOREPO_GIT_REVISION)
       workspaces:
@@ -434,7 +434,7 @@ spec:
 
             echo "Creating ArgoCD application for TST Environment"
 
-            oc apply -f $(workspaces.manifest-dir.path)/argocd/application/tst/application.yaml \
+            oc apply -f $(workspaces.manifest-dir.path)argocd/applications/sample-backend/tst/application.yaml \
               --namespace=$(params.PROJECT_NAME)-cicd
             sleep 10
 
@@ -514,7 +514,7 @@ spec:
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/pro/values.yaml
 
             echo "Pushing changes into Git repository"
-            git add argocd/application/pro/values.yaml
+            git add argocd/applications/sample-backend/pro/values.yaml
             git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
             git push origin $(params.MONOREPO_GIT_REVISION)
       workspaces:
@@ -544,7 +544,7 @@ spec:
 
             echo "Creating ArgoCD application for PRO Environment"
 
-            oc apply -f $(workspaces.manifest-dir.path)/argocd/application/pro/application.yaml \
+            oc apply -f $(workspaces.manifest-dir.path)/argocd/applications/sample-backend/pro/application.yaml \
               --namespace=$(params.PROJECT_NAME)-cicd
             sleep 10
 
