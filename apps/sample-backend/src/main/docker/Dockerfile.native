@@ -7,11 +7,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native -t quarkus/sample-app .
+# docker build -f src/main/docker/Dockerfile.native -t quarkus/sample-backend .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/sample-app
+# docker run -i --rm -p 8080:8080 quarkus/sample-backend
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
