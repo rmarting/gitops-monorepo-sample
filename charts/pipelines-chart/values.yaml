@@ -32,7 +32,7 @@ sonarqube:
 
 # Git Credentials
 
-git:  
+git:
   webhook:
     secret: s3cr3t
   secrets: {}
@@ -40,6 +40,7 @@ git:
     #  type: Opaque
     #  labels:
     #    credential.sync.jenkins.openshift.io: "true"
+    #    sealedsecrets.bitnami.com/managed: "true"
     #  data:
     #    config: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
     #    credentials: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
