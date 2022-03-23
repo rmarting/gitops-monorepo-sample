@@ -1,0 +1,94 @@
+# Default values for node-app-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: "node-app"
+nameOverride: "node-app"
+fullnameOverride: ""
+
+# Application Deployment
+
+replicaCount: 1
+
+image:
+  repository: image-registry.openshift-image-registry.svc:5000/gitops-monorepo-cicd
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+env: {}
+  # - name: SAMPLE_KEY
+  #   value: "sample value"
+  # - name: SAMPLE_KEY_FROM_CM
+  #   valueFrom:
+  #     configMapKeyRef:
+  #       name: node-app-config
+  #       key: SAMPLE_KEY_FROM_CM
+  # - name: SAMPLE_KEY_FROM_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: node-app-config-secret
+  #       key: SAMPLE_KEY_FROM_SECRET
+
+envFrom:
+  configmap:
+    enabled: false
+  secrets:
+    enabled: false
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Application Resources
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Application Service
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+# Application OpenShift Route
+
+route:
+  enabled: true
+  secure:
+    enabled: true
+    termination: edge
+
+# Application Horizontal Pod Autoscaler
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
