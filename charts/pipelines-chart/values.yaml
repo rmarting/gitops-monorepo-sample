@@ -7,14 +7,14 @@ project:
   name: gitops-monorepo
 
 application:
-  name: sample-app
+  frontend: sample-frontend
+  backend: sample-backend
 
 # Registry
 
 image:
   registry: image-registry.openshift-image-registry.svc:5000
   group: gitops-monorepo-cicd
-  name: sample-app
 
 # Nexus Settings
 
