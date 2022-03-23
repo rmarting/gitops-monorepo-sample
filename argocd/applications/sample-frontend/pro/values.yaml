@@ -1,0 +1,25 @@
+# Values to apply in Production Environment
+
+name: "sample-frontend"
+nameOverride: "sample-frontend"
+
+# Application Deployment
+
+replicaCount: 1
+
+image:
+  tag: "latest"
+
+# Config
+config:
+  env:
+    APP_ENVIRONMENT: pro
+    CHAOS_READINESS_ENABLE: "false"
+    CHAOS_READINESS_CRON: "0 */2 * * * ?"
+    CHAOS_LIVENESS_ENABLE: "false"
+    CHAOS_LIVENESS_CRON: "0 */2 * * * ?"
+
+# Secrets
+secrets:
+  env: 
+    APP_ENVIRONMENT_SECRET: my-pro-secret
