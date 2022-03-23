@@ -21,7 +21,7 @@ spec:
         path: argocd/application
         helm:
           valueFiles:
-            - ../../argocd/application/{{ env }}/values.yaml
+            - ../../argocd/applications/sample-backend/{{ env }}/values.yaml
       destination:
         namespace: 'gitops-monorepo-{{ env }}'
         server: 'https://kubernetes.default.svc'
