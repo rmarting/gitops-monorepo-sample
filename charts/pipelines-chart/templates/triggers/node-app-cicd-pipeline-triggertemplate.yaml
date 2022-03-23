@@ -2,7 +2,7 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: maven-app-cicd-pipeline-triggertemplate
+  name: node-app-cicd-pipeline-triggertemplate
 spec:
   params:
     - name: git_url
@@ -17,15 +17,15 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:  
-        generateName: maven-app-cicd-
+        generateName: node-app-cicd-
         labels:
-          tekton.dev/pipeline: "maven-app-cicd-pipeline"
+          tekton.dev/pipeline: "node-app-cicd-pipeline"
           git.branch: "$(tt.params.git_branch)"
           git.commit.id: "$(tt.params.git_commit_id)"
           cicd: "$(tt.params.cicd_enabled)"
       spec:
         pipelineRef:
-          name: maven-app-cicd-pipeline
+          name: node-app-cicd-pipeline
         workspaces:
           - name: workspace
             volumeClaimTemplate:
@@ -43,14 +43,14 @@ spec:
               claimName: maven-m2-repo
           - name: git-cli-auth
             secret:
-              secretName: git-cli-auth-github
+              secretName: git-cli-auth
         params:
           - name: CICD
             value: $(tt.params.cicd_enabled)
           - name: PROJECT_NAME
             value: {{ .Values.project.name | quote }}
           - name: APP_NAME
-            value: {{ .Values.application.backend | quote }}
+            value: {{ .Values.application.frontend | quote }}
           - name: MONOREPO_GIT
             value: $(tt.params.git_url)
           - name: MONOREPO_GIT_REVISION
@@ -58,6 +58,6 @@ spec:
           - name: MONOREPO_APP_CONTEXT_DIR
             value: apps/sample-frontend
           - name: APP_IMAGE
-            value: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.application.backend }}"
+            value: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.application.frontend }}"
           - name: NEXUS_URL
             value: "{{ .Values.nexus.url }}"

@@ -7,6 +7,7 @@ spec:
   serviceAccountName: pipeline
   triggers:
     - triggerRef: maven-app-cicd-pipeline-trigger
+    - triggerRef: node-app-cicd-pipeline-trigger
 ---
 apiVersion: route.openshift.io/v1
 kind: Route

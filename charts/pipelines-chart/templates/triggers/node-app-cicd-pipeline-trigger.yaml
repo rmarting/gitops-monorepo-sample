@@ -1,0 +1,38 @@
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: node-app-cicd-pipeline-trigger
+spec:
+  interceptors:
+    - ref:
+        # GitHub interceptor
+        name: github
+      params:
+        - name: secretRef
+          value:
+            secretName: git-interceptor-webhook
+            secretKey: secret
+        - name: eventTypes
+          value: ["push"]
+    - ref:
+        name: cel
+      params:
+        # CI or CICD pipeline
+        - name: "overlays"
+          value:
+          - key: cicd_enabled
+            expression: "body.ref == 'refs/heads/main'"
+          - expression: body.ref.split('/')[2]
+            key: git-branch
+        # Changes in the trunk branch
+        # Commit adds, removes or modifies code in the app
+        - name: "filter"
+          value: |
+            body.head_commit.added.exists(x, x.contains('sample-frontend')) ||
+            body.head_commit.removed.exists(x, x.contains('sample-frontend')) ||
+            body.head_commit.modified.exists(x, x.contains('sample-frontend'))
+  bindings:
+    - ref: node-app-cicd-pipeline-triggerbinding
+  template:
+    ref: node-app-cicd-pipeline-triggertemplate
