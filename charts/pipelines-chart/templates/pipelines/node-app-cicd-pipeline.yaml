@@ -1,0 +1,614 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: node-app-cicd-pipeline
+spec:
+  description: |
+    CICD pipeline to build and deploy a Node.JS/NPM application in a
+    development environment, testing it and promoting to an testing and production environments.
+  params:
+    - name: CICD
+      type: string
+      description: If true then enables a full CICD pipeline, otherwise a single CI pipeline
+      default: "true"
+    - name: PROJECT_NAME
+      type: string
+      description: The project name. It will define the namespace to deploy
+    - name: APP_NAME
+      type: string
+      description: The application name
+    - name: MONOREPO_GIT
+      type: string
+      description: The monorepo git repository      
+    - name: MONOREPO_GIT_REVISION
+      type: string
+      description: The monorepo git revision
+      default: main
+    - name: MONOREPO_APP_CONTEXT_DIR
+      type: string
+      description: The application source code context dir
+    - name: APP_IMAGE
+      type: string
+      description: The application image to build
+      default: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.image.name }}"
+    - name: NEXUS_URL
+      type: string
+      description: Default Nexus Software Artifacts Repository
+      default: http://sonatype-nexus-service:8081
+    - name: SONARQUBE_URL
+      type: string
+      description: Default SonarQube
+      default: http://sonatype-nexus-service:8081
+    - name: SONARQUBE_USER
+      type: string
+      description: Default SonarQube User
+      default: admin
+    - name: SONARQUBE_PASS
+      type: string
+      description: Default SonarQube User Password
+      default: admin123
+  workspaces:
+    - name: workspace
+    - name: maven-settings
+    - name: maven-m2-repo
+    - name: git-cli-auth
+      optional: true
+  tasks:
+    # Clone monorepo
+    - name: git-clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: workspace
+      params:
+        - name: url
+          value: $(params.MONOREPO_GIT)
+        - name: revision
+          value: $(params.MONOREPO_GIT_REVISION)
+        - name: depth
+          value: "0"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: sslVerify
+          value: "false"    
+    
+    # # Set version release
+    # - name: set-version-release
+    #   taskRef:
+    #     name: maven
+    #   runAfter:
+    #     - git-clone
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: maven-settings
+    #       workspace: maven-settings
+    #     - name: maven-m2-repo
+    #       workspace: maven-m2-repo
+    #   params:
+    #     - name: GOALS
+    #       value: 
+    #         - build-helper:parse-version
+    #         - git-commit-id:revision
+    #         - versions:set
+    #         - -Dmaven.wagon.http.ssl.insecure=true
+    #         - -Pset-version-release
+    #     - name: CONTEXT_DIR
+    #       value: "$(params.MONOREPO_APP_CONTEXT_DIR)"
+    
+    # # Unit Tests
+    # - name: unit-tests
+    #   taskRef:
+    #     name: maven
+    #   runAfter:
+    #     - set-version-release
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: maven-settings
+    #       workspace: maven-settings
+    #     - name: maven-m2-repo
+    #       workspace: maven-m2-repo
+    #   params:
+    #     - name: GOALS
+    #       value: 
+    #         - test
+    #         - -Dmaven.wagon.http.ssl.insecure=true
+    #     - name: CONTEXT_DIR
+    #       value: "$(params.MONOREPO_APP_CONTEXT_DIR)"
+
+    # # Integrate with SonarQube Code Analysis Tool
+    # - name: code-analysis
+    #   taskRef:
+    #     name: maven
+    #   runAfter:
+    #     - unit-tests
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: maven-settings
+    #       workspace: maven-settings
+    #     - name: maven-m2-repo
+    #       workspace: maven-m2-repo      
+    #   params:
+    #     - name: GOALS
+    #       value:
+    #         - test
+    #         - sonar:sonar
+    #         - -Dsonar.host.url=$(params.SONARQUBE_URL)
+    #         - -Dsonar.login=$(params.SONARQUBE_USER)
+    #         - -Dsonar.password=$(params.SONARQUBE_PASS)
+    #         - -Dmaven.wagon.http.ssl.insecure=true
+    #     - name: CONTEXT_DIR
+    #       value: "$(params.MONOREPO_APP_CONTEXT_DIR)"
+
+    # Build Application
+    - name: npm-build
+      taskRef:
+        name: npm
+      runAfter:
+        - git-clone
+      workspaces:
+        - name: source
+          workspace: workspace
+      params:
+        - name: PATH_CONTEXT
+          value: "$(params.MONOREPO_APP_CONTEXT_DIR)"
+        - name: SCRIPT
+          value: |
+            #!/usr/bin/bash
+            set +x
+            set +v
+
+            echo "Installing application"
+            npm install
+            echo "Building application"
+            npm run build            
+
+    # # Deploy Artifact into Nexus
+    # - name: publish-artifact
+    #   taskRef:
+    #     name: maven
+    #   runAfter:
+    #     - code-analysis
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: maven-settings
+    #       workspace: maven-settings
+    #     - name: maven-m2-repo
+    #       workspace: maven-m2-repo
+    #   params:
+    #     - name: GOALS
+    #       value:
+    #         - deploy
+    #         - -DskipTests
+    #         - -Dmaven.wagon.http.ssl.insecure=true            
+    #         - -DaltDeploymentRepository=nexus::default::$(params.NEXUS_URL)/repository/maven-releases/
+    #         - -DaltSnapshotDeploymentRepository=nexus::default::$(params.NEXUS_URL)/repository/maven-snapshots/
+    #     - name: CONTEXT_DIR
+    #       value: "$(params.MONOREPO_APP_CONTEXT_DIR)"
+
+    # Bake Image into Container Registry
+    - name: bake-image
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      runAfter:
+        - npm-build
+      when:
+      - input: "$(params.CICD)"
+        operator: in
+        values: ["true"]
+      workspaces:
+        - name: source
+          workspace: workspace
+      params:
+        - name: IMAGE
+          value: $(params.APP_IMAGE):latest
+        - name: BUILDER_IMAGE
+          value: registry.redhat.io/rhel8/buildah@sha256:180c4d9849b6ab0e5465d30d4f3a77765cf0d852ca1cb1efb59d6e8c9f90d467
+        - name: STORAGE_DRIVER
+          value: vfs
+        - name: CONTEXT
+          value: $(params.MONOREPO_APP_CONTEXT_DIR)
+        - name: DOCKERFILE
+          value: $(params.MONOREPO_APP_CONTEXT_DIR)/Dockerfile
+        - name: TLSVERIFY
+          value: 'false'
+        - name: FORMAT
+          value: oci
+
+    # - name: tag-image
+    #   taskRef:
+    #     name: openshift-client
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - bake-image
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Tag image latest('$(tasks.bake-image.results.IMAGE_DIGEST)') with '$(tasks.publish-artifact.results.APP_VERSION)'"
+    #         oc tag \
+    #           $(params.PROJECT_NAME)-cicd/$(params.APP_NAME):latest \
+    #           $(params.PROJECT_NAME)-cicd/$(params.APP_NAME):$(tasks.publish-artifact.results.APP_VERSION)
+    
+    # # - name: git-commit-app-version
+    # #   taskRef:
+    # #     name: git-cli
+    # #     kind: ClusterTask
+    # #   runAfter:
+    # #     - tag-image
+    #   # when:
+    #   # - input: "$(params.CICD)"
+    #   #   operator: in
+    #   #   values: ["true"]
+    # #   params:
+    # #     - name: GIT_USER_NAME
+    # #       value: "CICD Pipeline"
+    # #     - name: GIT_USER_EMAIL
+    # #       value: "cicd-pipeline@jromanmartin.io"
+    # #     - name: GIT_SCRIPT
+    # #       value: |
+    # #         #!/usr/bin/bash
+    # #         set -x
+    # #         set -v
+
+    # #         echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
+    # #         git checkout $(params.MONOREPO_GIT_REVISION)
+
+    # #         echo "Commit new version into Git repository"
+    # #         git add $(params.MONOREPO_APP_CONTEXT_DIR)/pom.xml
+    # #         git commit -m ":bookmark: New version $(tasks.publish-artifact.results.APP_VERSION)"
+    # #         git push origin $(params.MONOREPO_GIT_REVISION)
+    # #   workspaces:
+    # #     - name: source
+    # #       workspace: workspace
+    # #     - name: basic-auth
+    # #       workspace: git-cli-auth
+
+    # # Commit and push new version for deploy in DEV Environment
+    # - name: git-commit-app-dev-version
+    #   taskRef:
+    #     name: git-cli
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - bake-image
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: GIT_USER_NAME
+    #       value: "CICD Pipeline"
+    #     - name: GIT_USER_EMAIL
+    #       value: "cicd-pipeline@jromanmartin.io"
+    #     - name: GIT_SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
+    #         git checkout $(params.MONOREPO_GIT_REVISION)
+
+    #         echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in DEV values file"
+    #         sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/application/dev/values.yaml
+
+    #         echo "Pushing changes into Monorepo Git"
+    #         git add argocd/application/dev/values.yaml
+    #         git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
+    #         git push origin $(params.MONOREPO_GIT_REVISION)
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: basic-auth
+    #       workspace: git-cli-auth
+
+    # # Create or update Application definition in ArgoCD for DEV Environment
+    # - name: deploy-app-dev
+    #   taskRef:
+    #     name: openshift-client
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - tag-image
+    #     - git-commit-app-dev-version
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Creating ArgoCD application for DEV Environment"
+
+    #         oc apply -f $(workspaces.manifest-dir.path)/argocd/application/dev/application.yaml \
+    #           --namespace=$(params.PROJECT_NAME)-cicd
+    #         sleep 10
+
+    #         echo "Downloading ArgoCD cli tool"            
+    #         curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.0/argocd-linux-amd64
+    #         chmod +x /tmp/argocd
+
+    #         echo "Logging into ArgoCD"
+    #         export ARGOCD_PASS=$(oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n $(params.PROJECT_NAME)-cicd | base64 -d)
+
+    #         /tmp/argocd login argocd-server.$(params.PROJECT_NAME)-cicd.svc.cluster.local:443 \
+    #           --username admin --password $ARGOCD_PASS \
+    #           --insecure
+
+    #         echo "Sync and wait for application deployment in DEV Environment"
+    #         /tmp/argocd app sync "$(params.APP_NAME)-dev"
+    #         sleep 10
+    #         /tmp/argocd app wait "$(params.APP_NAME)-dev" --timeout=300
+    #   workspaces:
+    #     - name: manifest-dir
+    #       workspace: workspace
+
+    # # End-to-End tests for DEV Environment
+    # - name: e2e-test-dev
+    #   taskRef:
+    #     name: npm
+    #   runAfter:
+    #     - deploy-app-dev
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Installing newman tool"
+    #         npm install -g newman@5.3.2
+
+    #         echo "Executing End-to-End tests"
+    #         newman run e2e-test/collection.json \
+    #           -e e2e-test/dev/env.json \
+    #           -n 10
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+
+    # # Commit and push new version for deploy in tst environment
+    # - name: git-commit-app-tst-version
+    #   taskRef:
+    #     name: git-cli
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - e2e-test-dev
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: GIT_USER_NAME
+    #       value: "CICD Pipeline"
+    #     - name: GIT_USER_EMAIL
+    #       value: "cicd-pipeline@jromanmartin.io"
+    #     - name: GIT_SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
+    #         git checkout $(params.MONOREPO_GIT_REVISION)
+
+    #         echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in TST values file"
+    #         sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/application/tst/values.yaml
+
+    #         echo "Pushing changes into Git repository"
+    #         git add argocd/application/tst/values.yaml
+    #         git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
+    #         git push origin $(params.MONOREPO_GIT_REVISION)
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: basic-auth
+    #       workspace: git-cli-auth
+
+    # # Create or update Application definition in ArgoCD for TST Environment
+    # - name: deploy-app-tst
+    #   taskRef:
+    #     name: openshift-client
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - tag-image
+    #     - git-commit-app-tst-version
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Creating ArgoCD application for TST Environment"
+
+    #         oc apply -f $(workspaces.manifest-dir.path)/argocd/application/tst/application.yaml \
+    #           --namespace=$(params.PROJECT_NAME)-cicd
+    #         sleep 10
+
+    #         echo "Downloading ArgoCD cli tool"
+    #         curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.0/argocd-linux-amd64
+    #         chmod +x /tmp/argocd
+
+    #         echo "Logging into ArgoCD"
+    #         export ARGOCD_PASS=$(oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n $(params.PROJECT_NAME)-cicd | base64 -d)
+
+    #         /tmp/argocd login argocd-server.$(params.PROJECT_NAME)-cicd.svc.cluster.local:443 \
+    #           --username admin --password $ARGOCD_PASS \
+    #           --insecure
+
+    #         echo "Sync and wait for application deployment in TST Environment"
+    #         /tmp/argocd app sync "$(params.APP_NAME)-tst"
+    #         sleep 10
+    #         /tmp/argocd app wait "$(params.APP_NAME)-tst" --timeout=300
+    #   workspaces:
+    #     - name: manifest-dir
+    #       workspace: workspace
+
+    # # End-to-End tests for TST Environment
+    # - name: e2e-test-tst
+    #   taskRef:
+    #     name: npm
+    #   runAfter:
+    #     - deploy-app-tst
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Installing newman tool"
+    #         npm install -g newman@5.3.2
+
+    #         echo "Executing End-to-End tests"
+    #         newman run e2e-test/collection.json \
+    #           -e e2e-test/tst/env.json \
+    #           -n 10
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+
+    # # Commit and push new version for deploy in PRO Environment
+    # - name: git-commit-app-pro-version
+    #   taskRef:
+    #     name: git-cli
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - e2e-test-tst
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: GIT_USER_NAME
+    #       value: "CICD Pipeline"
+    #     - name: GIT_USER_EMAIL
+    #       value: "cicd-pipeline@jromanmartin.io"
+    #     - name: GIT_SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
+    #         git checkout $(params.MONOREPO_GIT_REVISION)
+
+    #         echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in PRO values file"
+    #         sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/application/pro/values.yaml
+
+    #         echo "Pushing changes into Git repository"
+    #         git add argocd/application/pro/values.yaml
+    #         git commit -m ":bookmark: New DEV version $(tasks.publish-artifact.results.APP_VERSION)"
+    #         git push origin $(params.MONOREPO_GIT_REVISION)
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
+    #     - name: basic-auth
+    #       workspace: git-cli-auth
+
+    # # Create or update Application definition in ArgoCD for PRO Environment
+    # - name: deploy-app-pro
+    #   taskRef:
+    #     name: openshift-client
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - tag-image
+    #     - git-commit-app-pro-version
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Creating ArgoCD application for PRO Environment"
+
+    #         oc apply -f $(workspaces.manifest-dir.path)/argocd/application/pro/application.yaml \
+    #           --namespace=$(params.PROJECT_NAME)-cicd
+    #         sleep 10
+
+    #         echo "Downloading ArgoCD cli tool"
+    #         curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.0/argocd-linux-amd64
+    #         chmod +x /tmp/argocd
+
+    #         echo "Logging into ArgoCD"
+    #         export ARGOCD_PASS=$(oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n $(params.PROJECT_NAME)-cicd | base64 -d)
+
+    #         /tmp/argocd login argocd-server.$(params.PROJECT_NAME)-cicd.svc.cluster.local:443 \
+    #           --username admin --password $ARGOCD_PASS \
+    #           --insecure
+
+    #         echo "Sync and wait for application deployment in PRO Environment"
+    #         /tmp/argocd app sync "$(params.APP_NAME)-pro"
+    #         sleep 10
+    #         /tmp/argocd app wait "$(params.APP_NAME)-pro" --timeout=300
+    #   workspaces:
+    #     - name: manifest-dir
+    #       workspace: workspace
+
+    # # End-to-End tests for PRO Environment
+    # - name: e2e-test-pro
+    #   taskRef:
+    #     name: npm
+    #   runAfter:
+    #     - deploy-app-pro
+    #   when:
+    #   - input: "$(params.CICD)"
+    #     operator: in
+    #     values: ["true"]
+    #   params:
+    #     - name: SCRIPT
+    #       value: |
+    #         #!/usr/bin/bash
+    #         set +x
+    #         set +v
+
+    #         echo "Installing newman tool"
+    #         npm install -g newman@5.3.2
+
+    #         echo "Executing End-to-End tests"
+    #         newman run e2e-test/collection.json \
+    #           -e e2e-test/pro/env.json \
+    #           -n 10
+    #   workspaces:
+    #     - name: source
+    #       workspace: workspace
