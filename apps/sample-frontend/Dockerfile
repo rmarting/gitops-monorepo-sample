@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.21.6-alpine
 
 # Copying nginx config to different folder
 COPY nginx.conf /etc/nginx/nginx.conf 
