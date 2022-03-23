@@ -10,6 +10,8 @@ export class AppComponent {
   title = 'sample-frontend';
 
   response = {}
+  message = ''
+  environment = ''
 
   constructor(private backendService: BackendService) {
     console.log('AppComponent constructor');
@@ -18,31 +20,45 @@ export class AppComponent {
   getUser() {
     console.log('getUser');
     this.backendService.getUser().subscribe(
-      (data) => this.response = data
+      (data) => {
+        this.response = data;
+        this.message = JSON.parse(JSON.stringify(data)).message;
+        this.environment = JSON.parse(JSON.stringify(data)).environment;
+      }
     );
   }
 
   getUserGreeting() {
     console.log('getUserGreeting');
-    return {
-      name: 'John Doe',
-      email: 'john@example.org'
-    }
+    this.backendService.getUserGreeting().subscribe(
+      (data) => {
+        this.response = data;
+        this.message = JSON.parse(JSON.stringify(data)).message;
+        this.environment = JSON.parse(JSON.stringify(data)).environment;
+      }
+    );
   }  
 
   postUserGreeting() {
     console.log('postUserGreeting');
-    this.backendService.postUserGreeting("Roman").subscribe(
-      (data) => this.response = data
+    this.backendService.postUserGreeting("User Front").subscribe(
+      (data) => {
+        this.response = data;
+        this.message = JSON.parse(JSON.stringify(data)).message;
+        this.environment = JSON.parse(JSON.stringify(data)).environment;
+      }
     );
   }
 
-  getPostUserFarewell() {
+  postUserFarewell() {
     console.log('getPostUserFarewell');
-    return {
-      name: 'John Doe',
-      email: 'john@example.org'
-    }
+    this.backendService.postUserFarewell("User Front").subscribe(
+      (data) => {
+        this.response = data;
+        this.message = JSON.parse(JSON.stringify(data)).message;
+        this.environment = JSON.parse(JSON.stringify(data)).environment;
+      }
+    );
   }  
 
 }

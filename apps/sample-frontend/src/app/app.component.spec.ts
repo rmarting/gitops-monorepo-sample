@@ -1,16 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
+import { BackendService } from './services/backend.service';
 
-describe('AppComponent', () => {
+describe('AppComponent', () => {  
   beforeEach(async () => {
+    let mockBackendService = {};
+
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        HttpClientTestingModule
       ],
       declarations: [
-        AppComponent()
+        AppComponent
       ],
+      providers: [{
+        provide: BackendService, useValue: mockBackendService
+      }]
     }).compileComponents();
   });
 
