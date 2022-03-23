@@ -26,21 +26,12 @@ spec:
           - expression: body.ref.split('/')[2]
             key: git-branch
         # Changes in the trunk branch
-        # Commit adds new code in the app
+        # Commit adds, removes or modifies code in the app
         - name: "filter"
-          value: "body.head_commit.added.size() > 0"
-        - name: "filter"
-          value: "body.head_commit.added.exists(x, x.startsWith('app'))"
-        # Commit removes code in the app
-        - name: "filter"
-          value: "body.head_commit.removed.size() > 0"
-        - name: "filter"
-          value: "body.head_commit.removed.exists(x, x.startsWith('app'))"
-        # Commit modifies code in the app
-        - name: "filter"
-          value: "body.head_commit.modified.size() > 0"
-        - name: "filter"
-          value: "body.head_commit.modified.exists(x, x.startsWith('app'))"
+          value: |
+            body.head_commit.added.exists(x, x.contains('sample-backend')) ||
+            body.head_commit.removed.exists(x, x.sample-backend('sample-backend')) || 
+            body.head_commit.modified.exists(x, x.sample-backend('sample-backend'))
   bindings:
     - ref: maven-app-cicd-pipeline-triggerbinding
   template:

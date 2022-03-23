@@ -28,12 +28,10 @@ spec:
           name: maven-app-cicd-pipeline
         workspaces:
           - name: workspace
-            #persistentVolumeClaim:
-            #  claimName: pipeline-workspace
             volumeClaimTemplate:
               spec:
                 accessModes:
-                  - ReadWriteOnce # access mode may affect how you can use this volume in parallel tasks
+                  - ReadWriteOnce
                 resources:
                   requests:
                     storage: "1Gi"
@@ -58,7 +56,7 @@ spec:
           - name: MONOREPO_GIT_REVISION
             value: $(tt.params.git_branch)
           - name: MONOREPO_APP_CONTEXT_DIR
-            value: app
+            value: apps/sample-frontend
           - name: APP_IMAGE
             value: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.image.name }}"
           - name: NEXUS_URL
