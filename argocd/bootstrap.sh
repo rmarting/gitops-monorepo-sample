@@ -129,4 +129,4 @@ echo "Creating Project definitions in ArgoCD"
 echo ""
 
 oc apply -f projects/ -n $CICD_PROJECT
-oc apply -f application/sample-app-set.yaml -n $CICD_PROJECT
+oc apply -f application/sample-backend-set.yaml -n $CICD_PROJECT

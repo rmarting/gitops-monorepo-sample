@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: sample-app-set
+  name: sample-backend-set
   namespace: gitops-monorepo-cicd
 spec:
   generators:
@@ -12,7 +12,7 @@ spec:
         - env: pro
   template:
     metadata:
-      name: sample-app-{{env}}
+      name: sample-backend-{{env}}
     spec:
       project: gitops-monorepo-apps
       source:

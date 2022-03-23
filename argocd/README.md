@@ -288,13 +288,13 @@ Verify the applications are synchronized in the final environments:
 
 ```shell
 ❯ oc get applications -n gitops-monorepo-cicd
-NAME             SYNC STATUS   HEALTH STATUS
-nexus            Synced        Healthy
-pipelines        Synced        Healthy
-sample-app-dev   Synced        Healthy
-sample-app-pro   Synced        Healthy
-sample-app-tst   Synced        Healthy
-sonarqube        Synced        Healthy
+NAME                 SYNC STATUS   HEALTH STATUS
+nexus                Synced        Healthy
+pipelines            Synced        Healthy
+sample-backend-dev   Synced        Healthy
+sample-backend-pro   Synced        Healthy
+sample-backend-tst   Synced        Healthy
+sonarqube            Synced        Healthy
 ```
 
 ## Webhook

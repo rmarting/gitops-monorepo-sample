@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sample-app-pro
+  name: sample-backend-pro
   namespace: gitops-monorepo-cicd
   finalizers:
     - resources-finalizer.argocd.argoproj.io  
@@ -13,7 +13,7 @@ spec:
     path: charts/quarkus-app-chart
     helm:
       valueFiles:
-        - ../../argocd/application/pro/values.yaml
+        - ../../argocd/applications/sample-backend/pro/values.yaml
   destination:
     namespace: gitops-monorepo-pro
     server: 'https://kubernetes.default.svc'
@@ -22,4 +22,4 @@ spec:
       prune: true
       selfHeal: false
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true

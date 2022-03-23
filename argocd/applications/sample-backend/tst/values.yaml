@@ -1,7 +1,7 @@
-# Values to apply in Production Environment
+# Values to apply in Integration Environment
 
-name: "sample-app"
-nameOverride: "sample-app"
+name: "sample-backend"
+nameOverride: "sample-backend"
 
 # Application Deployment
 
@@ -13,7 +13,7 @@ image:
 # Config
 config:
   env:
-    APP_ENVIRONMENT: pro
+    APP_ENVIRONMENT: "int"
     CHAOS_READINESS_ENABLE: "false"
     CHAOS_READINESS_CRON: "0 */2 * * * ?"
     CHAOS_LIVENESS_ENABLE: "false"
@@ -22,4 +22,4 @@ config:
 # Secrets
 secrets:
   env: 
-    APP_ENVIRONMENT_SECRET: my-pro-secret
+    APP_ENVIRONMENT_SECRET: my-int-secret
