@@ -1,0 +1,9 @@
+
+<span>{{ title }} app is running!</span>
+
+<button type="button" class="btn btn-primary" (click)="getUser()">GET User</button>
+<button type="button" class="btn btn-secondary" (click)="getUserGreeting()">GET User Greeting</button>
+<button type="button" class="btn btn-success" (click)="postUserGreeting()">POST User Greeting</button>
+<button type="button" class="btn btn-danger" (click)="getPostUserFarewell()">POST User Farewell</button>
+
+RESPONSE: {{ response | json }}
