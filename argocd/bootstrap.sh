@@ -93,6 +93,20 @@ argocd login $(oc get route argocd-server -o jsonpath='{.spec.host}' -n gitops-m
   --insecure
 
 echo ""
+echo "Allowing ArgoCD to operate the Application's Namespaces"
+echo ""
+
+oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $DEV_PROJECT
+oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $TST_PROJECT
+oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $PRO_PROJECT
+
+echo ""
+echo "Enabling ArgoCD to manage Sealed Secrets"
+echo ""
+
+oc adm policy add-role-to-user sealedsecrets-edit system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller
+
+echo ""
 echo "Deploying Nexus by ArgoCD"
 echo ""
 
@@ -109,14 +123,6 @@ echo "Deploying Pipelines by ArgoCD"
 echo ""
 
 oc apply -f tools/pipelines/application.yaml -n $CICD_PROJECT
-
-echo ""
-echo "Allowing ArgoCD to operate the Application's Namespaces"
-echo ""
-
-oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $DEV_PROJECT
-oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $TST_PROJECT
-oc adm policy add-role-to-user admin system:serviceaccount:$CICD_PROJECT:argocd-argocd-application-controller -n $PRO_PROJECT
 
 echo ""
 echo "Creating Project definitions in ArgoCD"

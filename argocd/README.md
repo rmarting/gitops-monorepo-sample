@@ -138,6 +138,88 @@ To deploy SonarQube by ArgoCD, create the application definition as:
 oc apply -f tools/sonarqube/application.yaml -n gitops-monorepo-cicd
 ```
 
+### Pipelines
+
+To deploy Pipelines by ArgoCD, create the application definition as:
+
+```shell
+oc apply -f tools/pipelines/application.yaml -n gitops-monorepo-cicd
+```
+
+### Sealed Secrets
+
+
+
+When we say GitOps, we say “if it’s not in Git, it’s NOT REAL” but how are we going to store our sensitive data like credentials in Git repositories, where many people can access?! Sure, Kubernetes provides a way to manage secrets, but the problem is that it stores the sensitive information as a base64 string - anyone can decode the base64 string! Therefore, we cannot store Secret manifest files openly. We use an open-source tool called Sealed Secrets to address this problem.
+
+**NOTE**: ArgoCD requires to have the right privileges to manage `SealedSecrets` objects. To allow that we will add
+the `sealedsecrets-edit` role to the service account:
+
+```shell
+oc adm policy add-role-to-user sealedsecrets-edit system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller
+```
+
+If you want to integrate with your GitHub's account, then you have to create a secret similar to:
+
+```shell
+cat << EOF > /tmp/git-cli-auth-github.yaml
+kind: Secret
+apiVersion: v1
+metadata:
+  name: git-cli-auth-github
+type: Opaque
+stringData:
+  .gitconfig: |
+    [http]
+      sslVerify = false
+    [credential "https://github.com"]
+      helper = store
+  .git-credentials: |
+    https://<YOUR_USERNAME>:<YOUR_TOKEN>@github.com
+EOF
+```
+
+Then, get the sealed secret:
+
+```shell
+/tmp/kubeseal < /tmp/git-cli-auth-github.yaml > /tmp/sealed-git-cli-auth-github.yaml \
+    -n gitops-monorepo-cicd \
+    --controller-namespace gitops-monorepo-cicd \
+    --controller-name sealed-secrets \
+    -o yaml
+```
+
+Extract the sealed values of the `gitconfig` and `git-credentials` properties:
+
+```shell
+❯ cat /tmp/sealed-git-cli-auth-github.yaml | grep '\.git'
+    .git-credentials: AgBULs....
+    .gitconfig: AgAwSg....
+```
+
+Copy the `.git-credentials` and `.gitconfig` values into `tools/pipelines/values.yaml` file as:
+
+```yaml
+git:
+  secrets:
+    - name: github
+      type: Opaque
+      data:
+        config: AgCfXE....
+        credentials: AgAMID...
+```
+
+And this is GitOps, so commit and push your changes into your Git repository:
+
+Commit and push these values
+
+```shell
+git add tools/pipelines/values.yaml
+git commit -m ":passport_control: Added secured values (Sealed Secrets)"
+git push 
+```
+
+Now ArgoCD could synchronize the values with the right values
 ## Application Namespaces
 
 **NOTE:** This step must be done with a `cluster-admin` user.
@@ -166,7 +248,7 @@ ArgoCD uses the concept of project to classify the different applications manage
 Product Monorepo will have the following project definitions:
 
 * `gitops-monorepo-tools` to manage the different tools related with our product
-* `gitops-monorepo` to manage the different applications of our product
+* `gitops-monorepo-apps` to manage the different applications of our product
 
 To create the projects definitions:
 
