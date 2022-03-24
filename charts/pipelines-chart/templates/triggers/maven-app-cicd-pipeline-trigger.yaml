@@ -29,9 +29,9 @@ spec:
         # Commit adds, removes or modifies code in the app
         - name: "filter"
           value: |
-            body.head_commit.added.exists(x, x.startsWith('apps/sample-backend')) ||
-            body.head_commit.removed.exists(x, x.startsWith('apps/sample-backend')) ||
-            body.head_commit.modified.exists(x, x.startsWith('apps/sample-backend'))
+            body.head_commit.added.exists(x, x.startsWith('apps') && x.contains('sample-backend')) ||
+            body.head_commit.removed.exists(x, x.startsWith('apps') && x.contains('sample-backend')) ||
+            body.head_commit.modified.exists(x, x.startsWith('apps') && x.contains('sample-backend'))
   bindings:
     - ref: maven-app-cicd-pipeline-triggerbinding
   template:
