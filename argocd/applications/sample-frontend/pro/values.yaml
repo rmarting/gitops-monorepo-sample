@@ -8,7 +8,7 @@ nameOverride: "sample-frontend"
 replicaCount: 1
 
 image:
-  tag: "1.0.0-2022-03-24-13-19-04"
+  tag: "1.0.0-2022-03-24-19-25-51"
 
 # Config
 config:
