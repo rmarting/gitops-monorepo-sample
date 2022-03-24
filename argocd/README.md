@@ -148,11 +148,7 @@ oc apply -f tools/pipelines/application.yaml -n gitops-monorepo-cicd
 
 ### Sealed Secrets
 
-
-
-When we say GitOps, we say “if it’s not in Git, it’s NOT REAL” but how are we going to store our sensitive data like credentials in Git repositories, where many people can access?! Sure, Kubernetes provides a way to manage secrets, but the problem is that it stores the sensitive information as a base64 string - anyone can decode the base64 string! Therefore, we cannot store Secret manifest files openly. We use an open-source tool called Sealed Secrets to address this problem.
-
-**NOTE**: ArgoCD requires to have the right privileges to manage `SealedSecrets` objects. To allow that we will add
+ArgoCD requires to have the right privileges to manage `SealedSecrets` objects. To allow that we will add
 the `sealedsecrets-edit` role to the service account:
 
 ```shell
@@ -211,35 +207,42 @@ git:
 
 And this is GitOps, so commit and push your changes into your Git repository:
 
-Commit and push these values
-
 ```shell
 git add tools/pipelines/values.yaml
 git commit -m ":passport_control: Added secured values (Sealed Secrets)"
 git push 
 ```
 
-Now ArgoCD could synchronize the values with the right values
 ## Application Namespaces
+
+ArgoCD requires to be admin of the different namespaces used by our Product, so we need to
+add the `admin` to the service account, otherwise ArgoCD will not be able to create objects
+there.
 
 **NOTE:** This step must be done with a `cluster-admin` user.
 
 For development environment:
 
 ```shell
-oc adm policy add-role-to-user admin system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller -n gitops-monorepo-dev
+oc adm policy add-role-to-user admin \
+  system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller \
+  -n gitops-monorepo-dev
 ```
 
 For testing environment:
 
 ```shell
-oc adm policy add-role-to-user admin system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller -n gitops-monorepo-tst
+oc adm policy add-role-to-user admin \
+  system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller \
+  -n gitops-monorepo-tst
 ```
 
 For production environment:
 
 ```shell
-oc adm policy add-role-to-user admin system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller -n gitops-monorepo-pro
+oc adm policy add-role-to-user admin \
+  system:serviceaccount:gitops-monorepo-cicd:argocd-argocd-application-controller \
+  -n gitops-monorepo-pro
 ```
 
 ## Product Monorepo Projects
@@ -264,13 +267,13 @@ with the following commands:
 Applying the `application` CR object describing the application:
 
 ```shell
-oc apply -f application/<ENV>/application.yaml -n gitops-monorepo-cicd
+oc apply -f applications/sample-backend/<ENV>/application.yaml -n gitops-monorepo-cicd
 ```
 
 Or use the `argocd` CLI to create the definition of the application:
 
 ```shell
-argocd app create sample-app-<ENV> \
+argocd app create sample-backend-<ENV> \
   --dest-namespace gitops-monorepo-<ENV> \
   --dest-server https://kubernetes.default.svc \
   --repo https://github.com/rmarting/gitops-monorepo-sample.git \
