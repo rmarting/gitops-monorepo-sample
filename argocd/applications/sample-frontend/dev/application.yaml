@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: sample-frontend-dev
   namespace: gitops-monorepo-cicd
+  labels:
+    component-family: application
+    component-type: frontend
+    environment-type: dev
   finalizers:
     - resources-finalizer.argocd.argoproj.io  
 spec:
