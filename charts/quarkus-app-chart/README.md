@@ -49,9 +49,9 @@ right value for `ENV` variable:
 Deploy the application in Development (`dev`) environment:
 
 ```shell
-helm upgrade --install sample-app \
+helm upgrade --install sample-backend \
     ./quarkus-app-chart/ \
-    --values ../argocd/application/<ENV>/values.yaml \
+    --values ../argocd/applications/sample-backend/<ENV>/values.yaml \
     --history-max 4 \
     --namespace gitops-monorepo-<ENV> --create-namespace
 ```
@@ -61,5 +61,5 @@ helm upgrade --install sample-app \
 To remove the helm chart
 
 ```shell
-helm uninstall sample-app --namespace gitops-monorepo-<ENV>
+helm uninstall sample-backend --namespace gitops-monorepo-<ENV>
 ```
