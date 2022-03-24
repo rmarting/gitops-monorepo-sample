@@ -1,0 +1,37 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:  
+  generateName: node-app-cicd-
+spec:
+  pipelineRef:
+    name: node-app-cicd-pipeline
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: "1Gi"
+    - name: git-cli-auth
+      secret:
+        secretName: git-cli-auth-github
+  params:
+    - name: CICD
+      value: "true"
+    - name: PROJECT_NAME
+      value: gitops-monorepo
+    - name: APP_NAME
+      value: sample-frontend
+    - name: MONOREPO_GIT
+      value: https://github.com/rmarting/gitops-monorepo-sample.git
+    - name: MONOREPO_GIT_REVISION
+      value: main
+    - name: MONOREPO_APP_CONTEXT_DIR
+      value: apps/sample-frontend
+    - name: APP_IMAGE
+      value: image-registry.openshift-image-registry.svc:5000/gitops-monorepo-cicd/sample-frontend
+    - name: NEXUS_URL
+      value: http://sonatype-nexus-service:8081
