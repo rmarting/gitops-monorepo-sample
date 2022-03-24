@@ -181,6 +181,10 @@ spec:
         kind: ClusterTask
       runAfter:
         - npm-build
+      when:
+      - input: "$(params.CICD)"
+        operator: in
+        values: ["true"]        
       workspaces:
         - name: manifest-dir
           workspace: workspace
