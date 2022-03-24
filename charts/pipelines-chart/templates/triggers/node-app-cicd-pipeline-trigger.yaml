@@ -29,9 +29,9 @@ spec:
         # Commit adds, removes or modifies code in the app
         - name: "filter"
           value: |
-            body.head_commit.added.exists(x, x.contains('sample-frontend')) ||
-            body.head_commit.removed.exists(x, x.contains('sample-frontend')) ||
-            body.head_commit.modified.exists(x, x.contains('sample-frontend'))
+            body.head_commit.added.exists(x, x.startsWith('apps/sample-frontend')) ||
+            body.head_commit.removed.exists(x, x.startsWith('apps/sample-frontend')) ||
+            body.head_commit.modified.exists(x, x.startsWith('apps/sample-frontend'))
   bindings:
     - ref: node-app-cicd-pipeline-triggerbinding
   template:
