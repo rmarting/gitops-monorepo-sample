@@ -434,7 +434,7 @@ spec:
 
             echo "Creating ArgoCD application for TST Environment"
 
-            oc apply -f $(workspaces.manifest-dir.path)argocd/applications/sample-backend/tst/application.yaml \
+            oc apply -f $(workspaces.manifest-dir.path)/argocd/applications/sample-backend/tst/application.yaml \
               --namespace=$(params.PROJECT_NAME)-cicd
             sleep 10
 
