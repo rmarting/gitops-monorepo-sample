@@ -107,6 +107,13 @@ tar -xvf /tmp/kubeseal.tar.gz -C /tmp
 /tmp/kubeseal --version
 ```
 
+The last step is create a new `ClusterRole` to manage the `SealedSecrets` definitions. This role will be used by the
+ArgoCD service accounts to manage this kind of objects.
+
+```shell
+oc apply -f sealed-secrets/sealedsecrets-edit-clusterrole.yaml
+```
+
 ## DevOps Teams
 
 As it is now a good idea to allow DevOps teams to be `cluster-admin`, we could add these users to the new

@@ -52,3 +52,7 @@ echo "Installing kubeseal cli in tmp folder"
 curl -sSL -o /tmp/kubeseal.tar.gz https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.17.2/kubeseal-0.17.2-linux-amd64.tar.gz
 tar -xvf /tmp/kubeseal.tar.gz -C /tmp
 /tmp/kubeseal --version
+
+echo "Creating ClusterRole to edit Sealed Secrets"
+
+oc apply -f sealed-secrets/sealedsecrets-edit-clusterrole.yaml
