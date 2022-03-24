@@ -4,7 +4,7 @@ name: "sample-frontend"
 nameOverride: "sample-frontend"
 
 image:
-  tag: "latest"
+  tag: "0.0.0-2022-03-24-11-42-56"
 
 # Config
 config:
