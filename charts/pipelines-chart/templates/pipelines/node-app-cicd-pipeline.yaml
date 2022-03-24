@@ -49,8 +49,6 @@ spec:
       default: {{ .Values.sonarqube.pass | quote }}
   workspaces:
     - name: workspace
-    - name: maven-settings
-    - name: maven-m2-repo
     - name: git-cli-auth
       optional: true
   tasks:
