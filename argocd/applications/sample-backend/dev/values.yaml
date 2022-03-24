@@ -4,7 +4,7 @@ name: "sample-backend"
 nameOverride: "sample-backend"
 
 image:
-  tag: "1.0.1-20220324-194613-7c413fe"
+  tag: "1.0.1-20220324-221706-e98964a"
 
 # Config
 config:
