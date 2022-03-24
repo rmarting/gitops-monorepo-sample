@@ -43,7 +43,7 @@ spec:
               claimName: maven-m2-repo
           - name: git-cli-auth
             secret:
-              secretName: git-cli-auth
+              secretName: git-cli-auth-github
         params:
           - name: CICD
             value: $(tt.params.cicd_enabled)
