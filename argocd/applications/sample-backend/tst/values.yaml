@@ -8,7 +8,7 @@ nameOverride: "sample-backend"
 replicaCount: 1
 
 image:
-  tag: "1.0.1-20220324-133352-c663f82"
+  tag: "1.0.1-20220324-133925-a697e02"
 
 # Config
 config:
