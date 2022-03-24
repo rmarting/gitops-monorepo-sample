@@ -51,7 +51,7 @@ spec:
     - name: SONARQUBE_PASS
       type: string
       description: Default SonarQube User Password
-      default: {{ .Values.sonarqube.pass | quote }}            
+      default: {{ .Values.sonarqube.pass | quote }}
   workspaces:
     - name: workspace
     - name: maven-settings

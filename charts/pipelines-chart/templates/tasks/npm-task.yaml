@@ -23,13 +23,22 @@ spec:
       type: string
       default: "docker.io/library/node:12-alpine@sha256:dfbebf17bfb014e1e7068e76325a117bccf8679c68aec6a28514184a209c8bae"
       description: The node image you want to use.
+  results:
+    - name: APP_VERSION
+      description: Application version from package.json, added the timestamp.
   steps:
     - name: npm-script
       image: $(params.IMAGE)
+      workingDir: $(workspaces.source.path)/$(params.PATH_CONTEXT)
       script: |
         #!/usr/bin/env sh
-        $(params.SCRIPT)
-      workingDir: $(workspaces.source.path)/$(params.PATH_CONTEXT)
+        $(params.SCRIPT)      
       env:
         - name: CI
           value: "true"
+
+    - name: npm-get-version
+      image: bash:latest
+      workingDir: $(workspaces.source.path)/$(params.PATH_CONTEXT)      
+      script: |
+        echo -n $(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g') | tee $(results.APP_VERSION.path)
