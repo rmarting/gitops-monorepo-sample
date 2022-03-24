@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
@@ -31,7 +31,7 @@ spec:
         - name: {{ .Values.name | quote }}
           readinessProbe:
             httpGet:
-              path: /q/health/ready
+              path: /health
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 5
@@ -41,7 +41,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /q/health/live
+              path: /health
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 5
@@ -57,11 +57,11 @@ spec:
           envFrom:
             {{- if .Values.envFrom.configmap.enabled }}
             - configMapRef:
-                name: "{{ .Values.name }}-config"
+                name: "{{ .Values.name }}-config-env"
             {{- end }}
             {{- if .Values.envFrom.secrets.enabled }}
             - secretRef:
-                name: "{{ .Values.name }}-config-secret"
+                name: "{{ .Values.name }}-config-env-secret"
             {{- end }}
           {{- end }}
           securityContext:
@@ -80,6 +80,26 @@ spec:
           image: "{{ .Values.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmpfs-var
+              mountPath: /var/run
+            - name: tmpfs-var-nginx-cache
+              mountPath: /var/cache/nginx
+            {{- if .Values.config.enabled }}
+            - name: config
+              mountPath: /usr/share/nginx/html/assets/config            
+            {{- end }}
+      volumes:
+        - name: tmpfs-var
+          emptyDir: {}
+        - name: tmpfs-var-nginx-cache
+          emptyDir: {}
+        {{- if .Values.config.enabled }}          
+        - name: config
+          configMap:
+            name: {{ .Values.name }}-config
+            defaultMode: 420
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

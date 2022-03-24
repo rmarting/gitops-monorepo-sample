@@ -13,7 +13,7 @@ export class BackendService {
     console.log('BackendService constructor');
     console.log(this.appConfigService.getConfig());
 
-    this.BASE_URL = this.appConfigService.getConfig().server;
+    this.BASE_URL = this.appConfigService.getConfig().backendServiceUrl;
   }
 
   getUser() {

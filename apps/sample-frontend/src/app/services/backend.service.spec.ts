@@ -10,7 +10,7 @@ describe('BackendService', () => {
 
   beforeEach(() => {
     mockAppConfigService = {
-      getConfig: () => { return { server: "http://127.0.0.1:8080" } }
+      getConfig: () => { return { backendServiceUrl: "http://localhost:8080" } }
     }
 
     TestBed.configureTestingModule({

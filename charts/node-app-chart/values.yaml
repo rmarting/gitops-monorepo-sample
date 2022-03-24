@@ -27,12 +27,12 @@ env: {}
   # - name: SAMPLE_KEY_FROM_CM
   #   valueFrom:
   #     configMapKeyRef:
-  #       name: node-app-config
+  #       name: node-app-config-env
   #       key: SAMPLE_KEY_FROM_CM
   # - name: SAMPLE_KEY_FROM_SECRET
   #   valueFrom:
   #     secretKeyRef:
-  #       name: node-app-config-secret
+  #       name: node-app-config-env-secret
   #       key: SAMPLE_KEY_FROM_SECRET
 
 envFrom:
@@ -40,6 +40,12 @@ envFrom:
     enabled: false
   secrets:
     enabled: false
+
+config:
+  enabled: true
+  values:
+    backendServiceUrl: http://localhost:8080
+    environment: local
 
 securityContext: {}
   # capabilities:

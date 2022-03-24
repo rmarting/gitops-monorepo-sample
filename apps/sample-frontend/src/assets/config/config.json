@@ -1,3 +1,3 @@
 {
-    "server": "http://localhost:8080"
+    "backendServiceUrl": "http://localhost:8080"
 }

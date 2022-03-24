@@ -34,19 +34,19 @@ spec:
     - name: NEXUS_URL
       type: string
       description: Default Nexus Software Artifacts Repository
-      default: http://sonatype-nexus-service:8081
+      default: {{ .Values.nexus.url | quote }}
     - name: SONARQUBE_URL
       type: string
       description: Default SonarQube
-      default: http://sonatype-nexus-service:8081
+      default: {{ .Values.sonarqube.url | quote }}
     - name: SONARQUBE_USER
       type: string
       description: Default SonarQube User
-      default: admin
+      default: {{ .Values.sonarqube.user | quote }}
     - name: SONARQUBE_PASS
       type: string
       description: Default SonarQube User Password
-      default: admin123
+      default: {{ .Values.sonarqube.pass | quote }}
   workspaces:
     - name: workspace
     - name: maven-settings
@@ -167,7 +167,7 @@ spec:
             echo "Installing application"
             npm install
             echo "Building application"
-            npm run build            
+            npm run build-prod
 
     # # Deploy Artifact into Nexus
     # - name: publish-artifact
@@ -321,49 +321,50 @@ spec:
     #     - name: basic-auth
     #       workspace: git-cli-auth
 
-    # # Create or update Application definition in ArgoCD for DEV Environment
-    # - name: deploy-app-dev
-    #   taskRef:
-    #     name: openshift-client
-    #     kind: ClusterTask
-    #   runAfter:
-    #     - tag-image
-    #     - git-commit-app-dev-version
-    #   when:
-    #   - input: "$(params.CICD)"
-    #     operator: in
-    #     values: ["true"]
-    #   params:
-    #     - name: SCRIPT
-    #       value: |
-    #         #!/usr/bin/bash
-    #         set +x
-    #         set +v
+    # Create or update Application definition in ArgoCD for DEV Environment
+    - name: deploy-app-dev
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        #- tag-image
+        #- git-commit-app-dev-version
+        - bake-image
+      when:
+      - input: "$(params.CICD)"
+        operator: in
+        values: ["true"]
+      params:
+        - name: SCRIPT
+          value: |
+            #!/usr/bin/bash
+            set +x
+            set +v
 
-    #         echo "Creating ArgoCD application for DEV Environment"
+            echo "Creating ArgoCD application for DEV Environment"
 
-    #         oc apply -f $(workspaces.manifest-dir.path)/argocd/application/dev/application.yaml \
-    #           --namespace=$(params.PROJECT_NAME)-cicd
-    #         sleep 10
+            oc apply -f $(workspaces.manifest-dir.path)/argocd/applications/sample-front/dev/application.yaml \
+              --namespace=$(params.PROJECT_NAME)-cicd
+            sleep 10
 
-    #         echo "Downloading ArgoCD cli tool"            
-    #         curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.0/argocd-linux-amd64
-    #         chmod +x /tmp/argocd
+            echo "Downloading ArgoCD cli tool"            
+            curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.0/argocd-linux-amd64
+            chmod +x /tmp/argocd
 
-    #         echo "Logging into ArgoCD"
-    #         export ARGOCD_PASS=$(oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n $(params.PROJECT_NAME)-cicd | base64 -d)
+            echo "Logging into ArgoCD"
+            export ARGOCD_PASS=$(oc get secret argocd-cluster -o jsonpath='{.data.admin\.password}' -n $(params.PROJECT_NAME)-cicd | base64 -d)
 
-    #         /tmp/argocd login argocd-server.$(params.PROJECT_NAME)-cicd.svc.cluster.local:443 \
-    #           --username admin --password $ARGOCD_PASS \
-    #           --insecure
+            /tmp/argocd login argocd-server.$(params.PROJECT_NAME)-cicd.svc.cluster.local:443 \
+              --username admin --password $ARGOCD_PASS \
+              --insecure
 
-    #         echo "Sync and wait for application deployment in DEV Environment"
-    #         /tmp/argocd app sync "$(params.APP_NAME)-dev"
-    #         sleep 10
-    #         /tmp/argocd app wait "$(params.APP_NAME)-dev" --timeout=300
-    #   workspaces:
-    #     - name: manifest-dir
-    #       workspace: workspace
+            echo "Sync and wait for application deployment in DEV Environment"
+            /tmp/argocd app sync "$(params.APP_NAME)-dev"
+            sleep 10
+            /tmp/argocd app wait "$(params.APP_NAME)-dev" --timeout=300
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
 
     # # End-to-End tests for DEV Environment
     # - name: e2e-test-dev

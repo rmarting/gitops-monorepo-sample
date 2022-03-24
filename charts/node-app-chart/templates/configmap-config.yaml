@@ -1,0 +1,17 @@
+{{- if .Values.config.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.name }}-config"
+  labels: 
+    {{- include "node-app-chart.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {      
+  {{- range $k, $v := .Values.config.values }}
+      {{ $k | quote }}: {{ $v | quote }},
+  {{- end }}
+      "name": "{{ .Values.name }}"
+    }
+{{- end }}

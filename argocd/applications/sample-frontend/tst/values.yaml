@@ -12,14 +12,7 @@ image:
 
 # Config
 config:
-  env:
-    APP_ENVIRONMENT: "int"
-    CHAOS_READINESS_ENABLE: "false"
-    CHAOS_READINESS_CRON: "0 */2 * * * ?"
-    CHAOS_LIVENESS_ENABLE: "false"
-    CHAOS_LIVENESS_CRON: "0 */2 * * * ?"
-
-# Secrets
-secrets:
-  env: 
-    APP_ENVIRONMENT_SECRET: my-int-secret
+  enabled: true
+  values:
+    backendServiceUrl: https://sample-backend-gitops-monorepo-tst.apps.labs.sandbox893.opentlc.com
+    environment: tst
