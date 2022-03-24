@@ -1,10 +1,13 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: pipelines
   namespace: gitops-monorepo-cicd
+  labels:
+    component-family: tools
   finalizers:
-    - resources-finalizer.argocd.argoproj.io  
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: gitops-monorepo-tools
   source:
