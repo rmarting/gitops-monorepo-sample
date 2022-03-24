@@ -1,4 +1,4 @@
-# Helm Charts
+# Node.JS Helm Chart
 
 Helm Charts to manage application deployments in Kubernetes or OpenShift.
 
@@ -44,9 +44,10 @@ Install or Upgrade the application with this Helm Chart for your current environ
 right value for `ENV` variable:
 
 * `dev` defined to be used for a development environment in OCP
-* `int` defined to be used for an integration environment in OCP
+* `tst` defined to be used for a testing environment in OCP
+* `pro` defined to be used for a production environment in OCP
 
-Deploy the application in Development (`dev`) environment:
+Deploy the application:
 
 ```shell
 helm upgrade --install sample-frontend \
@@ -62,4 +63,68 @@ To remove the helm chart
 
 ```shell
 helm uninstall sample-frontend --namespace gitops-monorepo-<ENV>
+```
+
+### Configuration and Values
+
+The following table lists the configurable parameters of the Bootstrap chart and their default values. See the values file for more concrete examples.
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `name`  | Name of the application | `node-app` |
+| `nameOverride` | Name of the application to override  | `node-app` |
+| `fullnameOverride` | Full name of the application  | empty |
+| `replicaCount` | Number of replicas  | 1 |
+| `image.repository` | Full route to the image in the Container Registry  | `image-registry.openshift-image-registry.svc:5000/gitops-monorepo-cicd` |
+| `image.pullPolicy` | Pull policy  | `Always` |
+| `image.tag` | Image Tag  | empty |
+| `podAnnotations` | Pod annotations | empty |
+| `podSecurityContext` | Security Context | empty |
+| `env` | Array of environment variables | empty |
+| `envFrom.configmap.enabled` | Load env variables from a ConfigMap | `false` |
+| `envFrom.secrets.enabled` | Load env variables from a Secret | `false` |
+| `config.enabled` | Enable to create a ConfigMap with the `config.json` key | `true` |
+| `config.values` | List of items to add into the `config.json` key | empty |
+| `securityContext` | Security context | empty |
+| `nodeSelector` | Node selector | empty |
+| `tolerations` | Array of tolerations | empty |
+| `affinity` | Affinity | empty |
+| `resources` | Resources and Limits | empty |
+| `service.type` | Service type | `ClusterIP` |
+| `service.port` | Service port | `8080` |
+| `service.targetPort` | Service target port | `8080` |
+| `route.enabled` | Declare a Route | `true` |
+| `route.secure.enabled` | Declare a secure route | `true` |
+| `route.secure.termination` | Termination of the secure route | `edge` |
+| `autoscaling.enabled` | Enable autoscaling | `false` |
+| `autoscaling.minReplicas` | Min replicas | `1` |
+| `autoscaling.maxReplicas` | Max replicas | `100` |
+| `autoscaling.targetCPUUtilizationPercentage` | Target CPU | `80` |
+| `autoscaling.targetMemoryUtilizationPercentage` | Target Memory | `80` |
+
+Environment variables will have the following structure:
+
+```yaml
+env:
+  - name: SAMPLE_KEY
+    value: "sample value"
+  - name: SAMPLE_KEY_FROM_CM
+    valueFrom:
+      configMapKeyRef:
+        name: quarkus-app-config
+        key: SAMPLE_KEY_FROM_CM
+  - name: SAMPLE_KEY_FROM_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: quarkus-app-config-secret
+        key: SAMPLE_KEY_FROM_SECRET
+```
+
+Items to add into the `config.json` key of the ConfigMap have the following structure:
+
+```yaml
+config:
+  values:
+    backendServiceUrl: http://localhost:8080
+    environment: local
 ```

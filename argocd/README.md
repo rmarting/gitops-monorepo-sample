@@ -1,4 +1,4 @@
-# ArgoCD
+# GitOps Monorepo Sample - GitOps by ArgoCD
 
 Now it is time to deploy our ArgoCD instance to manage our product, and any component
 or process needed.
@@ -291,13 +291,16 @@ Verify the applications are synchronized in the final environments:
 
 ```shell
 ❯ oc get applications -n gitops-monorepo-cicd
-NAME                 SYNC STATUS   HEALTH STATUS
-nexus                Synced        Healthy
-pipelines            Synced        Healthy
-sample-backend-dev   Synced        Healthy
-sample-backend-pro   Synced        Healthy
-sample-backend-tst   Synced        Healthy
-sonarqube            Synced        Healthy
+NAME                  SYNC STATUS   HEALTH STATUS
+nexus                 Synced        Healthy
+pipelines             Synced        Healthy
+sample-backend-dev    Synced        Healthy
+sample-backend-pro    Synced        Healthy
+sample-backend-tst    Synced        Healthy
+sample-frontend-dev   Synced        Healthy
+sample-frontend-pro   Synced        Healthy
+sample-frontend-tst   Synced        Healthy
+sonarqube             Synced        Healthy
 ```
 
 ## Webhook

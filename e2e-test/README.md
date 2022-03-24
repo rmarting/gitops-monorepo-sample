@@ -1,4 +1,4 @@
-# End to End Regression Tests
+# GitOps Monorepo Sample - End to End Regression Tests
 
 This folder includes a set of Newman collections to test and verify the application
 deployed in each environment. 

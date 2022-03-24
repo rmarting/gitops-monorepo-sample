@@ -1,9 +1,10 @@
-# Product Helm Charts
+# GitOps Monorepo Sample - Helm Charts
 
 This folder includes the list of different Helm Charts used by this Product Monorepo.
 
 * [Pipelines Chart](./pipelines-chart/README.md) to install the CICD pipelines
 * [Quarkus App Chart](./quarkus-app-chart/README.md) to deploy Quarkus applications
+* [Node.JS App Chart](./node-app-chart/README.md) to deploy Node.JS/NPM applications
 
 Main References:
 

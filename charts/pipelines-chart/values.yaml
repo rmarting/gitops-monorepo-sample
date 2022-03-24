@@ -42,5 +42,5 @@ git:
     #    credential.sync.jenkins.openshift.io: "true"
     #    sealedsecrets.bitnami.com/managed: "true"
     #  data:
-    #    config: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
-    #    credentials: YOUT_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
+    #    config: YOUR_SEALED_SECRETS_ENCRYPTED_DATA_VALUE
+    #    credentials: YOUR_SEALED_SECRETS_ENCRYPTED_DATA_VALUE

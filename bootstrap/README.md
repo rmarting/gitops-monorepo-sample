@@ -1,4 +1,4 @@
-# Bootstrapping Red Hat OpenShift Container Platform
+# GitOps Monorepo Sample - Bootstrapping Red Hat OpenShift Container Platform
 
 This section includes the main steps to bootstrap you OCP environment.
 
