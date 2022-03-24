@@ -14,5 +14,10 @@ image:
 config:
   enabled: true
   values:
-    backendServiceUrl: https://sample-backend-gitops-monorepo-tst.apps.labs.sandbox893.opentlc.com
+    backendServiceUrl: http://sample-backend-gitops-monorepo-tst.apps.labs.sandbox893.opentlc.com
     environment: tst
+
+# Route
+route:
+  secure:
+    enabled: false

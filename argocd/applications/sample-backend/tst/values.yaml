@@ -23,3 +23,8 @@ config:
 secrets:
   env: 
     APP_ENVIRONMENT_SECRET: my-int-secret
+
+# Route
+route:
+  secure:
+    enabled: false

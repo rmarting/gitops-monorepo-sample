@@ -19,3 +19,8 @@ config:
 secrets:
   env: 
     APP_ENVIRONMENT_SECRET: my-dev-secret
+
+# Route
+route:
+  secure:
+    enabled: false

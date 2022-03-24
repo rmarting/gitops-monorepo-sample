@@ -23,3 +23,8 @@ config:
 secrets:
   env: 
     APP_ENVIRONMENT_SECRET: my-pro-secret
+
+# Route
+route:
+  secure:
+    enabled: false
