@@ -289,6 +289,7 @@ spec:
 
             echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
             git checkout $(params.MONOREPO_GIT_REVISION)
+            git pull origin $(params.MONOREPO_GIT_REVISION)
 
             echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in DEV values file"
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/dev/values.yaml
@@ -399,6 +400,7 @@ spec:
 
             echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
             git checkout $(params.MONOREPO_GIT_REVISION)
+            git pull origin $(params.MONOREPO_GIT_REVISION)
 
             echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in TST values file"
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/tst/values.yaml
@@ -509,6 +511,7 @@ spec:
 
             echo "Checking out $(params.MONOREPO_GIT_REVISION) branch"
             git checkout $(params.MONOREPO_GIT_REVISION)
+            git pull origin $(params.MONOREPO_GIT_REVISION)
 
             echo "Replacing new $(tasks.publish-artifact.results.APP_VERSION) version in PRO values file"
             sed -i 's/tag.*/tag: "$(tasks.publish-artifact.results.APP_VERSION)"/' argocd/applications/sample-backend/pro/values.yaml
