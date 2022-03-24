@@ -26,18 +26,16 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
+## Building Container Image
 
+To generate your local container image of this application:
 
-❯ nvm use v16.14.2 
-Now using node v16.14.2 (npm v8.5.0)
-~/tmp 
-❯ node -v
-v16.14.2
-~/tmp 
-❯ npm install -g @angular/cli
-ng new sample-frontend
+```shell
+podman build -t gitops-monorepo/sample-frontend .
+```
 
-npm start
+To run it:
 
-npm install bootstrap --save
-
+```shell
+podman run -p 4200:8080 gitops-monorepo/sample-frontend
+```
