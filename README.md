@@ -23,7 +23,7 @@ your specif use case.
 The `product` is the software solution created for a business scenario, adding the value and solution
 to achieve the goals of the business. We build software to resolve business scenarios.
 
-:exclamation: Soon a blog post will try to clarify many of the aspects related with this repo. Stay tunned!:exclamation:
+❗ Soon a blog post will try to clarify many of the aspects related with this repo. Stay tunned!❗
 
 ## Product Monorepo
 

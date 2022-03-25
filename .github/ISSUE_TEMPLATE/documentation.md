@@ -1,11 +1,11 @@
 ---
 name: Documentation
 about: A generalized task to improve the documentation
-title: ":memo: [doc] - "
+title: "📝 [doc] - "
 labels: area/documentation
 assignees: ''
 ---
 
-**:memo: Description**
+### 📝 Description
 
 (Describe the task here.)

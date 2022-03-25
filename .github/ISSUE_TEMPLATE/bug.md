@@ -1,20 +1,20 @@
 ---
 name: New bug / issue
 about: bug report for technical content
-title: ":bug: [bug] - "
+title: "🐛 [bug] - "
 labels: bug
 assignees: ''
 
 ---
 
-### :memo: Description
+### 📝 Description
 ... of the issue you're seeing in the content / tech exercise
 
-### :checkered_flag: Expected behavior
+### 🏁 Expected behavior
 
 (Describe the expected behavior clearly and concisely.)
 
-### :running: Steps to reproduce
+### 🏃 Steps to reproduce
 ... if applicable
 
 Steps to reproduce the behavior:
@@ -23,19 +23,19 @@ Steps to reproduce the behavior:
 2. 
 3. 
 
-**:wrench: Configuration**
+**🔧 Configuration**
 
 ```properties
 # Add your configuration here, if applicable.
 ```
 
-### :bulb: Suggested solution
+### 💡 Suggested solution
 ... if applicable
 
-### :camera: Screenshots
+### 📷 Screenshots
 
 (If applicable, add screenshots to help explain your problem.)
 
-### :information_source: Additional context
+### ℹ️ Additional context
 
 (Add any other context about the problem here.)

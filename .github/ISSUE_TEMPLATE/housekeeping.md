@@ -1,15 +1,15 @@
 ---
 name: Housekeeping
 about: A generalized task or cleanup not associated with a bug report or enhancement
-title: ':house_with_garden: '
+title: '🏡 '
 labels: area/housekeeping
 assignees: ''
 ---
 
-**Description**
+### 📝 Description
 
 (Describe the task here.)
 
-**Implementation ideas**
+### 💡 Implementation ideas
 
 (If you have any implementation ideas, they can go here.)
